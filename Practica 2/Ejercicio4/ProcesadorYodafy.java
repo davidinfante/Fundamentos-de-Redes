@@ -10,7 +10,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.DatagramSocket;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.Random;
 
 
@@ -20,23 +24,18 @@ import java.util.Random;
 //
 public class ProcesadorYodafy extends Thread {
 	// Referencia a un socket para enviar/recibir las peticiones/respuestas
-	private Socket socketServicio;
-	// stream de lectura (por aquí se recibe lo que envía el cliente)
-	private InputStream inputStream;
-	// stream de escritura (por aquí se envía los datos al cliente)
-	private OutputStream outputStream;
-        
-        private PrintWriter printWriter;
-        
-        private BufferedReader buffReader;
+	private DatagramSocket socketUDP;
 	
 	// Para que la respuesta sea siempre diferente, usamos un generador de números aleatorios.
 	private Random random;
+        
+        // Búffer
+        byte[] buffer = new byte[256];
 	
 	// Constructor que tiene como parámetro una referencia al socket abierto en por otra clase
-	public ProcesadorYodafy(Socket socketServicio) {
-		this.socketServicio=socketServicio;
-		random=new Random();
+	public ProcesadorYodafy(DatagramSocket socketUDP) {
+            this.socketUDP = socketUDP;
+            random = new Random();
 	}
 	
         @Override 
@@ -46,25 +45,30 @@ public class ProcesadorYodafy extends Thread {
 	
 	// Aquí es donde se realiza el procesamiento realmente:
 	void procesa(){
-		
 		try {
-			// Obtiene los flujos de escritura/lectura
-			inputStream=socketServicio.getInputStream();
-			outputStream=socketServicio.getOutputStream();
-            printWriter = new PrintWriter(outputStream, true);
-            buffReader = new BufferedReader(new InputStreamReader(inputStream));
-                        
-			// Yoda hace su magia:
-			// Creamos un String a partir de la linea leida
-			String peticion = buffReader.readLine();
-			// Yoda reinterpreta el mensaje:
-			String respuesta=yodaDo(peticion);
-			
-			// Enviamos la traducción de Yoda:
-            printWriter.println(respuesta);		
+                    // Creamos paquete y lo recibimos
+                    DatagramPacket paquete = new DatagramPacket(buffer, buffer.length);
+                    socketUDP.receive(paquete);
+                    
+                    // Dirección conexión
+                    InetAddress direccion = paquete.getAddress();
+                    
+                    // Puerto
+                    int puerto = paquete.getPort();
+                    
+                    // Yoda hace su magia:
+                    // Creamos un String a partir de la linea leida
+                    String peticion = new String(paquete.getData(), Charset.forName("UTF-8"));
+
+                    // Yoda reinterpreta el mensaje:
+                    String respuesta = yodaDo(peticion);
+                    
+                    // Enviamos paquete con la respuesta
+                    DatagramPacket paquete2 = new DatagramPacket(respuesta.getBytes(), respuesta.getBytes().length, direccion, puerto);
+                    socketUDP.send(paquete2);
 			
 		} catch (IOException e) {
-			System.err.println("Error al obtener los flujso de entrada/salida.");
+			System.err.println("Error al obtener los flujos de entrada/salida.");
 		}
 
 	}

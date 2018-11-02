@@ -12,44 +12,45 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.nio.charset.Charset;
 
 public class YodafyClienteTCP {
-
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) {	
 		// Nombre del host donde se ejecuta el servidor:
 		String host="localhost";
-		// Puerto en el que espera el servidor:
+
+                // Puerto en el que espera el servidor:
 		int port=8989;
-		
-		// Socket para la conexión TCP
-		Socket socketServicio=null;
+                byte[] buffer = new byte[256];
 		
 		try {
-			// Creamos un socket que se conecte a "hist" y "port":
-			socketServicio = new Socket(host, port);		
-			
-			InputStream inputStream = socketServicio.getInputStream();
-			OutputStream outputStream = socketServicio.getOutputStream();
-            PrintWriter printWriter = new PrintWriter(outputStream, true);
-            BufferedReader buffReader = new BufferedReader(new InputStreamReader(inputStream));
-			
-			// Si queremos enviar una cadena de caracteres por un OutputStream, hay que pasarla primero
-			// a un array de bytes:
-			String mensaje = "Al monte del volcán debes ir sin demora";
-            // Enviamos al servidor el mensaje a traducir
-			printWriter.println(mensaje);
-			
+                        // Socket y dirección.
+                        DatagramSocket socketUDP = new DatagramSocket();
+                        InetAddress direccion = InetAddress.getByName(host);
+
+			// Mensaje
+                        String mensaje = "Al monte del volcán debes ir sin demora";
+                        
+                        // Enviamos paquete con mensaje
+                        DatagramPacket paquete = new DatagramPacket(mensaje.getBytes(), mensaje.getBytes().length, direccion, port);
+                        socketUDP.send(paquete);
+                        
+                        // Recibimos paquete con mensaje modificado
+                        DatagramPacket paquete2 = new DatagramPacket(buffer, buffer.length);
+                        socketUDP.receive(paquete2);
+                        
 			// Mostremos la cadena de caracteres recibidos:
 			System.out.println("Recibido: ");
-			mensaje = buffReader.readLine();
-            System.out.println(mensaje);
+			String msg = new String(paquete2.getData(), Charset.forName("UTF-8"));
+                        System.out.println(msg);
 			
-			// Una vez terminado el servicio, cerramos el socket (automáticamente se cierran
-			// el inpuStream  y el outputStream)
-			socketServicio.close();
+			// Cerramos socket
+			socketUDP.close();
 			
-			// Excepciones:
+		// Excepciones:
 		} catch (UnknownHostException e) {
 			System.err.println("Error: Nombre de host no encontrado.");
 		} catch (IOException e) {
