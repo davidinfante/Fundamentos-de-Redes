@@ -22,6 +22,11 @@ public class Juego extends Thread {
     private String[][] tablero = new String[3][3];
     // Enum con atributos para saber el estado del juego
     public enum Ganador {O, X, Draw, Continuar}
+    // Variables de la pestaña resultados
+    public static int winO = 0;
+    public static int winX = 0;
+    public static int draws = 0;
+    public static int num_turnos_total = 0;
 
     // Atributos de la comunicación cliente/servidor
     private InputStream inputStream;
@@ -32,15 +37,6 @@ public class Juego extends Thread {
 
     // Constructor
     public Juego(Socket socket) {
-        // Inicializamos el tablero con los números de su posición
-        int rellenar_tablero = 1;
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                tablero[i][j] = Integer.toString(rellenar_tablero);
-                ++rellenar_tablero;
-            }
-        }
-
         try {
             inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
@@ -57,37 +53,49 @@ public class Juego extends Thread {
     public void run(){
         partida();
     }
-
-    // Devuelve un String con el tablero actual
-    public String informacionTablero() {
-        String informacion_pantalla;
-
-        informacion_pantalla = "\n\n--- Tablero ---";
+    
+    // Resetear tablero 
+    private void resetearTablero() {
+        int rellenar_tablero = 1;
         for (int i = 0; i < 3; ++i) {
-            informacion_pantalla += "\n---------------\n";
             for (int j = 0; j < 3; ++j) {
-                informacion_pantalla += " | " + tablero[i][j];
+                tablero[i][j] = Integer.toString(rellenar_tablero);
+                ++rellenar_tablero;
             }
-            informacion_pantalla += " | ";
         }
-        informacion_pantalla += "\n---------------\n";
-        return informacion_pantalla;
+    }
+    
+    // Mensaje tablero
+    public String mensajeTablero() {
+        String msjTablero = "M1-";
+        
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                msjTablero += tablero[i][j];
+            }
+        }
+        
+        return msjTablero;
     }
     
     // Intercambio de mensajes con el cliente para colocar una ficha
     public int colocarFicha() {
         String ficha = "";
-        String informacion_pantalla;
 
         try {
             // Mandamos la información del estado de la partida
-            informacion_pantalla = informacionTablero();
-            informacion_pantalla += "\nEscribe el número de la posición donde quieres colocar tu ficha";
-            printWriter.println(informacion_pantalla);
+            String msjTablero = mensajeTablero();
+            msjTablero += 'C';
+            System.out.print("\n" + msjTablero);
+            printWriter.println(msjTablero);
             do {
                 // Recibimos la posición escogida por el cliente y comprobamos si es válida
+                System.out.print("\nM2");
+                printWriter.println("M2");
                 ficha = buffReader.readLine();
                 if (!comprobarPosicionLibre(ficha)) {
+                    System.out.print("\nM3");
+                    printWriter.println("M3");
                     String error = "Posición ocupada o inválida, elije de nuevo";
                     printWriter.println(error);
                 }
@@ -185,39 +193,77 @@ public class Juego extends Thread {
                 if (!tablero[i][j].equals("O") && !tablero[i][j].equals("X")) salir = true;
             }
         }
-        //Si está lleno
+        //Si no está lleno
         if (salir) return Ganador.Continuar;
         else return Ganador.Draw;
     }
     
     // Desarrollo de la partida
     public void partida() {
-        String jugador = "O";
-        int turno = 0;
-        Ganador fin;
+        String eleccion = "";
+        // Menu
         do {
-            if (turno % 2 == 0) jugador = "O";
-            else jugador = "X";
-            
-            actualizarTablero(colocarFicha(), jugador);
-            ++turno;
-            fin = finPartida();
-        } while (fin == Ganador.Continuar);
+            resetearTablero();
+            System.out.print("\nM00");
+            printWriter.println("M00");
+            try {
+                eleccion = buffReader.readLine();
+            } catch (IOException e) {
+                System.err.println("Error al recibir el mensaje");
+            }
+            switch (eleccion) {
+                case "1":
+                    System.out.print("\nM01");
+                    printWriter.println("M01");
+                    // Juego
+                    String jugador = "O";
+                    int turno = 0;
+                    Ganador fin;
+                    do {
+                        if (turno % 2 == 0) jugador = "O";
+                        else jugador = "X";
 
-        String resultado = informacionTablero();
-        switch (fin) {
-            case O:
-                resultado += "HA GANADO EL JUGADOR O";
-            break;
-            case X:
-                resultado += "HA GANADO EL JUGADOR X";
-            break;
-            case Draw:
-                resultado += "HA HABIDO UN EMPATE";
-            break;
-        }
+                        actualizarTablero(colocarFicha(), jugador);
+                        ++turno;
+                        fin = finPartida();
+                    } while (fin == Ganador.Continuar);
+                    String tableroFinal = mensajeTablero();
+                    tableroFinal += 'F';
+                    System.out.print(tableroFinal);
+                    printWriter.println(tableroFinal);
+                    switch (fin) {
+                        case O:
+                            ++winO;
+                            System.out.print("\nM4-O");
+                            printWriter.println("M4-O");
+                        break;
+                        case X:
+                            ++winX;
+                            System.out.print("\nM4-X");
+                            printWriter.println("M4-X");
+                        break;
+                        case Draw:
+                            ++draws;
+                            System.out.print("\nM4-D");
+                            printWriter.println("M4-D");
+                        break;
+                    }
 
-        printWriter.println("\n"+resultado);
-        System.out.print("\nFIN DEL JUEGO");
+                    String num_turnos = "M5-";
+                    num_turnos += turno;
+                    System.out.print("\n" + num_turnos);
+                    printWriter.println(num_turnos);
+                    num_turnos_total += turno;
+                    //System.out.print("\nFIN DEL JUEGO");
+                break;
+                case "2":
+                    String resultados = "M02-" + "O" + Integer.toString(winO) + "X" + Integer.toString(winX) + "D" + Integer.toString(draws) + "T" + Integer.toString(num_turnos_total);
+                    System.out.print("\n" + resultados);
+                    printWriter.println(resultados);
+                break;
+            }
+        } while (!eleccion.equals("3"));
+        
+        
     }
 }
