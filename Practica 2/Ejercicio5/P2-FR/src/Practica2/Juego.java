@@ -227,7 +227,7 @@ public class Juego extends Thread {
                         ++turno;
                         fin = finPartida();
                     } while (fin == Ganador.Continuar);
-                    String tableroFinal = mensajeTablero();
+                    String tableroFinal = ("\n" + mensajeTablero());
                     tableroFinal += 'F';
                     System.out.print(tableroFinal);
                     printWriter.println(tableroFinal);
@@ -254,7 +254,6 @@ public class Juego extends Thread {
                     System.out.print("\n" + num_turnos);
                     printWriter.println(num_turnos);
                     num_turnos_total += turno;
-                    //System.out.print("\nFIN DEL JUEGO");
                 break;
                 case "2":
                     String resultados = "M02-" + "O" + Integer.toString(winO) + "X" + Integer.toString(winX) + "D" + Integer.toString(draws) + "T" + Integer.toString(num_turnos_total);
@@ -263,7 +262,7 @@ public class Juego extends Thread {
                 break;
             }
         } while (!eleccion.equals("3"));
-        
+        System.out.print("\nFIN DE LA CONEXION");
         
     }
 }

@@ -24,7 +24,7 @@ public class Servidor {
             do {
                 // Aceptamos la nueva conexión
                 Socket socket = serverSocket.accept();
-                System.out.print("\nCOMIENZA LA PARTIDA");
+                System.out.print("\nCONEXION INICIADA");
                 // Comienza el juego
                 Juego juego = new Juego(socket);
                 juego.start();
