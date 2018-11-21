@@ -158,7 +158,7 @@ Como se comentaba anteriormente todos los datos obtenidos se almacena en diccion
 
 ### 5. Ejemplos de HoneyPots.
 
-- **Honeyd**: Creada por Niels Provos. Crea direcciones IP virtuales, cada una con los puertos y servicios que deseemos emular. Funciona tanto en Windows como en Linux.
+- **T-Pot**: es una plataforma que tiene como base una distribución Ubuntu. Incluye una gran variedad de HoneyPots ya preparados, configurados y listos para entrar en funcionamiento.  Algunos son: Conpot, Cowrie, Diaonea, ElasticPot, EMobility, Glastopf, HoneyTrap, Suricata, ELK.
 - **HoneyBOT**: Está hecho para Microsoft Windows y tiene una interfaz gráfica integrada. Se caracteriza por su nivel de detalle, guarda incluso todo byte recibido del atacante. Incluye interesantes gráficos que permiten ver los ataques más relevantes en un solo vistazo.
 - **Specter**: es más poderoso, ya que tiene perfiles preconfigurados de varios sistemas operativos, inyecta datos codificados al atacante que permiten ser usados luego como prueba. Abre perfiles personalizados y acumulativos de cada intruso. A este programa no lo vamos a monitorizar nosotros mismos, sino que tiene informes predefinidos con datos a salvaguarda de la casa de software y desconocemos cómo los cuida porque es de código cerrado.
 - **Kippo**: Está escrito en Python y está alojado en GitHub con licencia libre. Se describe como un honeypot de interacción mediana enfocado en SSH.
@@ -201,3 +201,5 @@ Esta arquitectura permite tener al mismo nivel las máquinas de producción y un
 - [https://www.cse.wustl.edu/~jain/cse571-09/ftp/honey/](https://www.cse.wustl.edu/~jain/cse571-09/ftp/honey/)
 - [https://www.pandasecurity.com/spain/mediacenter/seguridad/diferencias-sandboxing-honeypot/](https://www.pandasecurity.com/spain/mediacenter/seguridad/diferencias-sandboxing-honeypot/)
 - [https://hacking-etico.com/2012/12/03/honeypot-un-tarro-de-miel-para-los-atacantes/](https://hacking-etico.com/2012/12/03/honeypot-un-tarro-de-miel-para-los-atacantes/)
+- [http://www.elladodelmal.com/2017/07/t-pot-una-colmena-de-honeypots-para.html](http://www.elladodelmal.com/2017/07/t-pot-una-colmena-de-honeypots-para.html)
+
