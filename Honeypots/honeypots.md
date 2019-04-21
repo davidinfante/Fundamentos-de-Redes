@@ -98,7 +98,7 @@ Por un lado, un HoneyPot podría ser un equipo cualquiera en el cual no se ha he
 
 Con este estudio de los atacantes y ataques se generan diccionarios de parámetros relevantes que luego se tienen en cuenta a la hora de confeccionar sistemas de protección.
 
-En resumen, son un gran aliado a la hora de defender una red ya que la mejor manera de evitar un ataque es conocer el propio ataque y su forma de actual. Algunos HoneyPots son más sencillos que otros en cuanto a configuración y manejo, pero en general todos son muy configurables.
+En resumen, son un gran aliado a la hora de defender una red ya que la mejor manera de evitar un ataque es conocer el propio ataque y su forma de actuar. Algunos HoneyPots son más sencillos que otros en cuanto a configuración y manejo, pero en general todos son muy configurables.
 
 Actualmente los HoneyPots han evolucionado, apareciendo las HoneyNets, que son redes complejas de HoneyPots que simulan redes locales completas, lo que permite obtener mucha más información.
 
